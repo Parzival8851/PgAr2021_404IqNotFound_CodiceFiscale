@@ -29,7 +29,7 @@ public class CodiceFiscale
         if (sesso.equalsIgnoreCase("F")){//se si tratta di una donna aggiungo 40 al giorno calcolato sopra
             giorno = giorno + 40;
         }
-        mese=String.valueOf(data.charAt(5))+ String.valueOf(data.charAt(6));/*Trasformo il mese in formato stringa
+        mese=String.valueOf(data.charAt(5)) + String.valueOf(data.charAt(6));/*Trasformo il mese in formato stringa
                                                                             per poi passarlo al metodo successivo*/
         mese=calcolaMese(mese);
         return anno+mese+giorno;//viene ritornata una stringa che contiene anno, mese e giorno concatenati
@@ -278,11 +278,11 @@ public class CodiceFiscale
                conta++;
            }
            //il conta serve per far capire se ci sono abbastanza consonanti nel cognome e per posizionare le lettere
-           if (conta == 3)
+           if (conta == 2)
                break;
        }
        //utilezzerò questo if se le consonanti non sono abbastanza(perchè le vocali vanno dopo le consonati)
-       if (conta != 3) {
+       if (conta != 2) {
            for (int j=conta; j < cognome.length();j++){
                if (cognome.charAt(j) == 'A' || cognome.charAt(j) == 'E' || cognome.charAt(j) == 'I' || cognome.charAt(j) == 'O' || cognome.charAt(j) == 'U'){
                    carattere[conta] = cognome.charAt(conta);
@@ -290,11 +290,11 @@ public class CodiceFiscale
                }
            }
        }
-       //questi if servono per mettere le X se il cognome dovesse essere troppo corto
-       if (conta == 1) carattere[1] = 'X';
-       if (conta == 2) carattere[2]= 'X';
+       //questo if serve per mettere le X se il cognome dovesse essere troppo corto
 
-       cognome=String.valueOf(carattere);
+       if (conta == 1) carattere[2]= 'X';
+
+       cognome=String.valueOf(carattere);//trasformo i caratteri salvati in una stringa per comodità
         return cognome;
    }
 }
