@@ -11,16 +11,32 @@ public class Main
 {
     public static final String MSG_INPUT_PERSONE = "Inserire percorso del file di input persone:";
     private static String nomefile = inputFile();
-    private int numero_persone = letturaNumeroPersone(nomefile);
-    private ArrayList<Persona> lista = new ArrayList<Persona>();
+    private static int numero_persone = letturaNumeroPersone(nomefile);
 
-    public Main() throws XMLStreamException {
-    }
+
+    private static ArrayList<Persona> lista = new ArrayList<Persona>();
+
+
 
     public static void main(String[] args)
     {
+        creaPersone(numero_persone, nomefile, lista);
+        creaCF(lista, nomefile);
+
+        // controlli sui cf, scrittura
+
     }
 
+
+    private static void creaCF(ArrayList<Persona> pers, String nomefile)
+    {
+        // for each elementi di lista, creo l'oggetto CF e lo setto nell'array
+        for(Persona temp : pers)
+        {
+            CodiceFiscale code = new CodiceFiscale(temp, nomefile);
+            temp.setCodiceFiscale(code.getCodice());
+        }
+    }
 
     /**
      *  richiedo il percorso del file di input delle persone
@@ -62,13 +78,14 @@ public class Main
         return -1;
     }
 
-    private void creaPersoneCF(int n, String nomefile, ArrayList<Persona> pers)
+    private static void creaPersone(int n, String nomefile, ArrayList<Persona> pers)
     {
+        // creo n persone nell'arraylist
         Persona temp;
-        for (int i = 0; i < n; i++)
-        {
-            temp = new Persona()
-            pers.add();
+        for (int i = 0; i < n; i++) {
+            temp = new Persona(nomefile);
+            pers.add(temp);
         }
     }
+
 }

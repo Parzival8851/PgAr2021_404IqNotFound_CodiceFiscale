@@ -126,13 +126,16 @@ public class CodiceFiscale
     }
 
     /**
-     *
+     *Per il calcolo del codice di controllo sommiamo i valori a cui corrispondono
+     * i caratteri alfanumerici che si trovano in posizione dispari
+     * e da un'altra quelli che si trovano in posizione pari
+     * attraverso le tabelle che sono contenute negli switch
      * @param codice
      * @return
      */
     public String calcolaCodiceControllo(String codice)
     {
-        // calcolo i pari
+        // sommo i valori a cui corrispondono i valori in posizione pari
         int sommaPari=0;
         for (int i=0;i<=14;i+=2) {
             switch (codice.charAt(i)) {
@@ -174,7 +177,7 @@ public class CodiceFiscale
                 case 'Z': sommaPari+=25;break;
             }
         }
-        // calcolo i dispari
+        // sommo i valori a cui corrispondono i valori in posizione dipari
         int sommaDispari=0;
         for (int i=1;i<=15;i+=2) {
             switch (codice.charAt(i)) {
@@ -216,7 +219,7 @@ public class CodiceFiscale
                 case 'Z': sommaDispari+=23;break;
             }
         }
-        // calcolo il codice finale
+        // calcolo il codice finale con il resto della divisione tra la somma dei valori diviso 26
         int interoControllo = (sommaPari+sommaDispari)%26;
         String carattereControllo="";
         switch (interoControllo) {
@@ -251,17 +254,15 @@ public class CodiceFiscale
         return carattereControllo;
     }
 
-    /**
-     *
-     * @param pers
-     * @return
-     */
-    public String calcolaCF(Persona pers) throws XMLStreamException {
+    public CodiceFiscale(Persona pers, String nomefile)
+    {
         // creo il codice fino alla penultima lettera
-        String codice=calcolaCognome(pers.getCognome())+calcolaCognome(pers.getNome())+calcolaData(pers.getDataNascita(), pers.getSesso())+calcolaComune(pers.getComuneNascita());
+        String codice=calcolaCognome(pers.getCognome())+calcolaCognome(pers.getNome())+calcolaData(pers.getDataNascita(), pers.getSesso())+calcolaComune(pers.getComuneNascita(), nomefile);
         // aggiungo il codice di controllo;
-        return codice+calcolaCodiceControllo(codice);
+        this.codice= codice+calcolaCodiceControllo(codice);
     }
+
+
 
     /**
         * metodo per deciciedere le tre lettere che andranno nel codice fiscale

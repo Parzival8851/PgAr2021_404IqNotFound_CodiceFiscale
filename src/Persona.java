@@ -12,6 +12,10 @@ public class Persona
     private String sesso;
     private String codiceFiscale;
 
+    public void setCodiceFiscale(String codiceFiscale) {
+        this.codiceFiscale = codiceFiscale;
+    }
+
     public String getSesso() {
         return sesso;
     }
@@ -44,7 +48,7 @@ public class Persona
      * @param n
      */
 
-    public Persona(String nomefile, int n)
+    public Persona(String nomefile)
     {
         String i = Integer.toString(n);
         XMLInputFactory xmlif = null;
