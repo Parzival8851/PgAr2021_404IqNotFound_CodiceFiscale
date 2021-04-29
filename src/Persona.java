@@ -1,98 +1,105 @@
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.FileInputStream;
-
+/**
+ * questa classe serve per mettere le variabile di Persona con i loro get
+ */
 public class Persona
 {
+    /**
+     * stringa nome
+     */
     private String nome;
+    /**
+     * stringa cognome
+     */
     private String cognome;
+    /**
+     * stringa data di nascita
+     */
     private String dataNascita;
+    /**
+     * stringa comune di nascita
+     */
     private String comuneNascita;
+    /**
+     * stringa sesso
+     */
     private String sesso;
+    /**
+     * stringa codice fiscale
+     */
     private String codiceFiscale;
 
+    /**
+     *set del codice fiscale
+     *  @param codiceFiscale
+     */
     public void setCodiceFiscale(String codiceFiscale) {
         this.codiceFiscale = codiceFiscale;
     }
 
+    /**
+     * get del sesso
+     * @return
+     */
     public String getSesso() {
         return sesso;
     }
 
+    /**
+     * get del codice fiscale
+     * @return
+     */
     public String getCodiceFiscale() {
         return codiceFiscale;
     }
 
+    /**
+     * get cognome
+     * @return
+     */
     public String getCognome() {
         return cognome;
     }
 
+    /**
+     * get del comune di nascita
+     * @return
+     */
     public String getComuneNascita() {
         return comuneNascita;
     }
 
 
+    /**
+     * get della data di nascita
+     * @return
+     */
     public String getDataNascita() {
         return dataNascita;
     }
 
+    /**
+     * get del nome
+     * @return
+     */
     public String getNome() {
         return nome;
     }
 
 
     /**
-     *
-     * @param nomefile
-     *
+     *questo metodo riconosce le variebili di Persona
+     * @param _nome
+     * @param _cognome
+     * @param _sesso
+     * @param _comuneNascita
+     * @param _dataNascita
      */
-
-    public Persona(String nomefile, int i) throws XMLStreamException {
-        // cerco i dati della persona i-esima
-        // inizializzzazione lettore
-        XMLInputFactory xmlif = null;
-        XMLStreamReader xmlr = null;
-        try
-        {
-            xmlif = XMLInputFactory.newInstance();
-            xmlr = xmlif.createXMLStreamReader(nomefile, new FileInputStream(nomefile));
-        }
-        catch(Exception e)
-        {
-            System.out.println("Errore nell'inizializzazione del reader");
-            System.out.println(e.getMessage());
-        }
-
-        while(xmlr.hasNext())
-        {
-            // cerco il tag "persona"
-            if(xmlr.isStartElement() && xmlr.getLocalName().equalsIgnoreCase("persona"))
-            {
-                // cerco la i-esima persona
-                if(xmlr.getAttributeValue(0).equalsIgnoreCase(Integer.toString(i)))
-                {
-                    // leggo il nome
-                    for (int j = 0; j < 2; j++) xmlr.next();
-                    this.nome=xmlr.getText();
-                    // leggo il cognome
-                    for (int j = 0; j < 3; j++) xmlr.next();
-                    this.cognome=xmlr.getText();
-                    // leggo il sesso
-                    for (int j = 0; j < 3; j++) xmlr.next();
-                    this.sesso=xmlr.getText();
-                    // leggo il comune
-                    for (int j = 0; j < 3; j++) xmlr.next();
-                    this.comuneNascita=xmlr.getText();
-                    // leggo la data di nascita
-                    for (int j = 0; j < 3; j++) xmlr.next();
-                    this.dataNascita=xmlr.getText();
-                }
-            }
-        }
-
-
-
+    public Persona(String _nome,String _cognome,String _sesso,String _comuneNascita,String _dataNascita)
+    {
+        this.nome=_nome;
+        this.cognome=_cognome;
+        this.sesso=_sesso;
+        this.dataNascita=_dataNascita;
+        this.comuneNascita=_comuneNascita;
     }
 }

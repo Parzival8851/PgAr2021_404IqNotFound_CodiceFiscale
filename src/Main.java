@@ -1,18 +1,11 @@
 import java.io.FileInputStream;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.util.ArrayList;
 
-import it.unibs.fp.mylib.InputDati;
-
 public class Main
 {
-    public static final String MSG_INPUT_PERSONE = "Inserire percorso del file di input persone:";
-    public static final String PERSONE = "persone";
-    private static String nomefile = inputFile();
-    private static int numero_persone = letturaNumeroCiclo(nomefile, PERSONE);
 
 
     private static ArrayList<Persona> lista = new ArrayList<Persona>();
@@ -20,45 +13,31 @@ public class Main
 
 
     public static void main(String[] args) throws XMLStreamException {
-        creaPersone(numero_persone, nomefile, lista);
-        creaCF(lista, nomefile);
+        creaPersone();
+        creaCF();
         Controlli control = new Controlli(lista);
+        Scrittura script = new Scrittura(lista, control.getCF_Sbagliati(), control.getCF_Spaiati());
 
     }
 
 
-    private static void creaCF(ArrayList<Persona> pers, String nomefile) throws XMLStreamException {
+    private static void creaCF() throws XMLStreamException {
         // for each elementi di lista, creo l'oggetto CF e lo setto nell'array
-        for(Persona temp : pers)
+        for(Persona temp : lista)
         {
-            CodiceFiscale code = new CodiceFiscale(temp, nomefile);
+            CodiceFiscale code = new CodiceFiscale(temp);
             temp.setCodiceFiscale(code.getCodice());
         }
     }
 
-    /**
-     *  richiedo il percorso del file di input delle persone
-     *
-     * @return
-     */
-    private static String inputFile()
-    {
-       return InputDati.leggiStringaNonVuota(MSG_INPUT_PERSONE);
-    }
 
 
-    /**
-     *
-     * @param nomefile
-     * @return
-     * @throws XMLStreamException
-     */
-    private static int letturaNumeroCiclo(String nomefile, String nomeCiclo) throws XMLStreamException {
+    private static void creaPersone() throws XMLStreamException { // crea persone nella lista finché esistono i tag adeguati
         XMLInputFactory xmlif = null;
         XMLStreamReader xmlr = null;
         try {
             xmlif = XMLInputFactory.newInstance();
-            xmlr = xmlif.createXMLStreamReader(nomefile, new FileInputStream(nomefile));
+            xmlr = xmlif.createXMLStreamReader(".../inputPersone.xml", new FileInputStream(".../inputPersone.xml"));
         } catch (Exception e) {
             System.out.println("Errore nell'inizializzazione del reader:");
             System.out.println(e.getMessage());
@@ -66,23 +45,31 @@ public class Main
 
         while(xmlr.hasNext())
         {
-            //leggo il tag "persone" e prendo il valore convertito in int del suo attributo
-            if(xmlr.isStartElement() && xmlr.getLocalName().equals(nomeCiclo))
+            // cerco il tag "persona"
+            if(xmlr.isStartElement() && xmlr.getLocalName().equalsIgnoreCase("persona"))
             {
-               return Integer.parseInt(xmlr.getAttributeValue(0));
+                // leggo il nome
+                for (int j = 0; j < 2; j++) xmlr.next();
+                String nome=xmlr.getText();
+                // leggo il cognome
+                for (int j = 0; j < 3; j++) xmlr.next();
+                String cognome=xmlr.getText();
+                // leggo il sesso
+                for (int j = 0; j < 3; j++) xmlr.next();
+                String sesso=xmlr.getText();
+                // leggo il comune
+                for (int j = 0; j < 3; j++) xmlr.next();
+                String comuneNascita=xmlr.getText();
+                // leggo la data di nascita
+                for (int j = 0; j < 3; j++) xmlr.next();
+                String dataNascita=xmlr.getText();
+
+                //Persona temp = new Persona();
+                lista.add(new Persona(nome, cognome, sesso, comuneNascita, dataNascita));
             }
             else xmlr.next();
         }
-        return -1;
     }
 
-    private static void creaPersone(int n, String nomefile, ArrayList<Persona> pers) throws XMLStreamException {
-        // creo n persone nell'arraylist
-        Persona temp;
-        for (int i = 0; i < n; i++) {
-            temp = new Persona(nomefile, i);
-            pers.add(temp);
-        }
-    }
 
 }

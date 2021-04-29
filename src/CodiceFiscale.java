@@ -6,6 +6,9 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.FileInputStream;
 import java.util.Locale;
 
+/**
+ * questa classe contiene i vari metodi per calcolarlo e infine contiene quello per le unire il tutto
+ */
 public class CodiceFiscale
 {
     private String codice;
@@ -18,7 +21,7 @@ public class CodiceFiscale
     /**
      * Metodo per calcolare, data la data di nascita, la sua corrispettiva nella forma per il codice fiscale
      * @param data
-     *
+     * @return
      */
     private String calcolaData (String data, String sesso) {
         int anno, giorno;
@@ -88,18 +91,17 @@ public class CodiceFiscale
 
 
     /**
-     *
+     *serve per capire quali cifre inserire nel codice fiscale per il comune
      * @param comune
-     * @return
      * @throws XMLStreamException
      */
-    private String calcolaComune(String comune, String nomefile) throws XMLStreamException {
+    private String calcolaComune(String comune) throws XMLStreamException {
         XMLInputFactory xmlif = null;
         XMLStreamReader xmlr = null;
         try
         {
             xmlif = XMLInputFactory.newInstance();
-            xmlr = xmlif.createXMLStreamReader(nomefile, new FileInputStream(nomefile));
+            xmlr = xmlif.createXMLStreamReader(".../comuni.xml", new FileInputStream(".../comuni.xml"));
         }
         catch (Exception e)
         {
@@ -109,7 +111,7 @@ public class CodiceFiscale
 
         while(xmlr.hasNext())
         {
-            if(xmlr.hasText() && xmlr.getText().equalsIgnoreCase(comune))
+            if(xmlr.hasText() && xmlr.getText().equalsIgnoreCase("comune"))
             {
                 // leggo finché non sono in un testo e il testo è il comune che mi interessa
                 for (int i = 0; i < 3; i++)
@@ -254,9 +256,15 @@ public class CodiceFiscale
         return carattereControllo;
     }
 
-    public CodiceFiscale(Persona pers, String nomefile) throws XMLStreamException {
+    /**
+     *serve per assemblare il codice precedentemente creato, quindi crea effettivamente il codice fiscale
+     * calcolato
+     * @param pers
+     * @throws XMLStreamException
+     */
+    public CodiceFiscale(Persona pers) throws XMLStreamException {
         // creo il codice fino alla penultima lettera
-        String codice=calcolaCognome(pers.getCognome())+calcolaCognome(pers.getNome())+calcolaData(pers.getDataNascita(), pers.getSesso())+calcolaComune(pers.getComuneNascita(), nomefile);
+        String codice=calcolaCognome(pers.getCognome())+calcolaCognome(pers.getNome())+calcolaData(pers.getDataNascita(), pers.getSesso())+calcolaComune(pers.getComuneNascita());
         // aggiungo il codice di controllo;
         this.codice= codice+calcolaCodiceControllo(codice);
     }
@@ -265,8 +273,9 @@ public class CodiceFiscale
 
 
     /**
-        * metodo per deciciedere le tre lettere che andranno nel codice fiscale
+        * metodo per decidere le tre lettere che andranno nel codice fiscale
         * @param cognome
+        * @return
         */
    private String calcolaCognome (String cognome) { // questo metodo lo chiamo sia per nome che per cognome
        char[] carattere = new char[3];
