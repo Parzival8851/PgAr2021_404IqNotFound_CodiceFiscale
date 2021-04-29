@@ -1,5 +1,6 @@
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.FileInputStream;
 
@@ -45,12 +46,12 @@ public class Persona
     /**
      *
      * @param nomefile
-     * @param n
+     *
      */
 
-    public Persona(String nomefile)
-    {
-        String i = Integer.toString(n);
+    public Persona(String nomefile, int i) throws XMLStreamException {
+        // cerco i dati della persona i-esima
+        // inizializzzazione lettore
         XMLInputFactory xmlif = null;
         XMLStreamReader xmlr = null;
         try
@@ -63,30 +64,35 @@ public class Persona
             System.out.println("Errore nell'inizializzazione del reader");
             System.out.println(e.getMessage());
         }
-        int find=0;
-        while(find==0)
+
+        while(xmlr.hasNext())
         {
-            if(xmlr.hasNext())
+            // cerco il tag "persona"
+            if(xmlr.isStartElement() && xmlr.getLocalName().equalsIgnoreCase("persona"))
             {
-                switch(xmlr.getEventType())
+                // cerco la i-esima persona
+                if(xmlr.getAttributeValue(0).equalsIgnoreCase(Integer.toString(i)))
                 {
-                    case XMLStreamConstants.START_ELEMENT: //sono nella persona giusta, la n-esima
-                        if (xmlr.getLocalName().equals("persona") && xmlr.getAttributeValue(0).equals(i))
-                        {
-                            xmlr.next();
-                            this.nome=xmlr.getText();
-                            xmlr.next();
-                            this.cognome=xmlr.getText();
-                            xmlr.next();
-                            this.sesso=xmlr.getText();
-                            xmlr.next();
-                            this.comuneNascita=xmlr.getText();
-                            xmlr.next();
-                            this.dataNascita=xmlr.getText();
-                        }
+                    // leggo il nome
+                    for (int j = 0; j < 2; j++) xmlr.next();
+                    this.nome=xmlr.getText();
+                    // leggo il cognome
+                    for (int j = 0; j < 3; j++) xmlr.next();
+                    this.cognome=xmlr.getText();
+                    // leggo il sesso
+                    for (int j = 0; j < 3; j++) xmlr.next();
+                    this.sesso=xmlr.getText();
+                    // leggo il comune
+                    for (int j = 0; j < 3; j++) xmlr.next();
+                    this.comuneNascita=xmlr.getText();
+                    // leggo la data di nascita
+                    for (int j = 0; j < 3; j++) xmlr.next();
+                    this.dataNascita=xmlr.getText();
                 }
             }
         }
+
+
 
     }
 }

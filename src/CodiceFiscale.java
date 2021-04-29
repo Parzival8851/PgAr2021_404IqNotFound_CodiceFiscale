@@ -20,7 +20,7 @@ public class CodiceFiscale
      * @param data
      *
      */
-    public String calcolaData (String data, String sesso) {
+    private String calcolaData (String data, String sesso) {
         int anno, giorno;
         String mese;
         anno = data.charAt(2) + data.charAt(3); //calcolo l'anno che corrisponde alle cifre in posizione 2 e 3
@@ -93,7 +93,7 @@ public class CodiceFiscale
      * @return
      * @throws XMLStreamException
      */
-    public String calcolaComune(String comune, String nomefile) throws XMLStreamException {
+    private String calcolaComune(String comune, String nomefile) throws XMLStreamException {
         XMLInputFactory xmlif = null;
         XMLStreamReader xmlr = null;
         try
@@ -254,8 +254,7 @@ public class CodiceFiscale
         return carattereControllo;
     }
 
-    public CodiceFiscale(Persona pers, String nomefile)
-    {
+    public CodiceFiscale(Persona pers, String nomefile) throws XMLStreamException {
         // creo il codice fino alla penultima lettera
         String codice=calcolaCognome(pers.getCognome())+calcolaCognome(pers.getNome())+calcolaData(pers.getDataNascita(), pers.getSesso())+calcolaComune(pers.getComuneNascita(), nomefile);
         // aggiungo il codice di controllo;
@@ -264,11 +263,12 @@ public class CodiceFiscale
 
 
 
+
     /**
         * metodo per deciciedere le tre lettere che andranno nel codice fiscale
         * @param cognome
         */
-   public String calcolaCognome (String cognome) { // questo metodo lo chiamo sia per nome che per cognome
+   private String calcolaCognome (String cognome) { // questo metodo lo chiamo sia per nome che per cognome
        char[] carattere = new char[3];
        int conta=0;
        //il for serve per prelevare le consonanti del cognome e se si trovano 3 consonanti il ciclo si interrompe
