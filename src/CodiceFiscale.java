@@ -189,7 +189,7 @@ public class CodiceFiscale
         }
         // sommo i valori a cui corrispondono i valori in posizione dipari
         int sommaDispari=0;
-        for (int i=1;i<=15;i+=2) {
+        for (int i=1;i<15;i+=2) {
             switch (codice.charAt(i)) {
                 case '0': sommaDispari+=1;break;
                 case '1': sommaDispari+=0;break;
@@ -304,9 +304,11 @@ public class CodiceFiscale
        if (conta != 3) {
            for (int j=conta; j < cognome.length();j++){
                if (cognome.charAt(j) == 'A' || cognome.charAt(j) == 'E' || cognome.charAt(j) == 'I' || cognome.charAt(j) == 'O' || cognome.charAt(j) == 'U'){
-                   carattere[conta] = cognome.charAt(conta);
+                   carattere[conta] = cognome.charAt(j);
                    conta++;
                }
+               if(conta==3)
+                   break;
            }
        }
        //questo if serve per mettere le X se il cognome dovesse essere troppo corto

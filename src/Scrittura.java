@@ -23,6 +23,7 @@ public class Scrittura {
      */
     public Scrittura(ArrayList<Persona> pers, ArrayList<String> sbagliati, ArrayList<String> spaiati)
     {
+        System.out.println("scrittura");
         try
         {
             outputter = XMLOutputFactory.newInstance();
