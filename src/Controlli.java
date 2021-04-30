@@ -40,7 +40,7 @@ public class Controlli {
 
     /**
      *serve a creare ed istanziare la variabile xmlr di tipo XMLStreamReader, che sarà
-     * utilizzata per leggere il file XML,e controlla che divide i codici sbaglati,giusti e spaiati
+     * utilizzata per leggere il file XML,e controlla che divide i codici sbagliati,giusti e spaiati
      * @param list
      * @throws XMLStreamException
      */
@@ -80,6 +80,7 @@ public class Controlli {
                 else System.out.println("CF corretto");
 
             }
+            xmlr.next();
         }
     }
 
