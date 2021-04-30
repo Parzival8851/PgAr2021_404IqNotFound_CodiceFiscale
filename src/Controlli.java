@@ -51,7 +51,7 @@ public class Controlli {
         {
             xmlif = XMLInputFactory.newInstance();
             // capire come passare il file codiciFiscali correttamente
-            xmlr = xmlif.createXMLStreamReader(".../codiciFiscali.xml", new FileInputStream(".../codiciFiscali.xml"));
+            xmlr = xmlif.createXMLStreamReader("src/codiciFiscali.xml", new FileInputStream("src/codiciFiscali.xml"));
         }
         catch(Exception e)
         {
@@ -69,12 +69,15 @@ public class Controlli {
                 {
                     // controllo se è corretto, altrimenti lo inserisco tra gli sbagliati
                     CF_Sbagliati.add(temp);
+                    System.out.println("CF sbagliato");
                 }
                 else if(codiceSpaiato(list, temp))
                 {
                     // controllo se è già di una persona altrimenti lo inserisco tra gli spaiati
                     CF_Spaiati.add(temp);
+                    System.out.println("CF spaiato");
                 }
+                else System.out.println("CF corretto");
 
             }
         }

@@ -24,13 +24,16 @@ public class CodiceFiscale
      * @return
      */
     private String calcolaData (String data, String sesso) {
-        int anno, giorno;
+        String anno, giorno;
         String mese;
-        anno = data.charAt(2) + data.charAt(3); //calcolo l'anno che corrisponde alle cifre in posizione 2 e 3
-        giorno = data.charAt(8) + data.charAt(9);//calcolo il giorno che corrisponde alle cifre in posizione 8 e 9
+        System.out.println("calcola data");
+        anno = String.valueOf(data.charAt(2)) + String.valueOf(data.charAt(3)); //calcolo l'anno che corrisponde alle cifre in posizione 2 e 3
+        giorno = String.valueOf(data.charAt(8)) + String.valueOf(data.charAt(9));//calcolo il giorno che corrisponde alle cifre in posizione 8 e 9
 
         if (sesso.equalsIgnoreCase("F")){//se si tratta di una donna aggiungo 40 al giorno calcolato sopra
-            giorno = giorno + 40;
+            int temp= Integer.valueOf(giorno);
+            temp+=40;
+            giorno=String.valueOf(temp);
         }
         mese=String.valueOf(data.charAt(5)) + String.valueOf(data.charAt(6));/*Trasformo il mese in formato stringa
                                                                             per poi passarlo al metodo successivo*/
@@ -98,10 +101,12 @@ public class CodiceFiscale
     private String calcolaComune(String comune) throws XMLStreamException {
         XMLInputFactory xmlif = null;
         XMLStreamReader xmlr = null;
+
+        System.out.println("calcola comuni");
         try
         {
             xmlif = XMLInputFactory.newInstance();
-            xmlr = xmlif.createXMLStreamReader(".../comuni.xml", new FileInputStream(".../comuni.xml"));
+            xmlr = xmlif.createXMLStreamReader("src/comuni.xml", new FileInputStream("src/comuni.xml"));
         }
         catch (Exception e)
         {
@@ -111,16 +116,18 @@ public class CodiceFiscale
 
         while(xmlr.hasNext())
         {
-            if(xmlr.hasText() && xmlr.getText().equalsIgnoreCase("comune"))
+            if(xmlr.isCharacters() && xmlr.getText().equalsIgnoreCase(comune))
             {
                 // leggo finché non sono in un testo e il testo è il comune che mi interessa
-                for (int i = 0; i < 3; i++)
+                while(!(xmlr.isStartElement() && xmlr.getLocalName().equalsIgnoreCase("codice")))
                 {
-                    // mi sposto all'evento dove è contenuto il codice del comune
                     xmlr.next();
+
                 }
+                xmlr.next();
                 return xmlr.getText();
             }
+            else xmlr.next();
         }
 
         // nel caso non trovi il comune ritorna un errore
@@ -137,6 +144,7 @@ public class CodiceFiscale
      */
     public String calcolaCodiceControllo(String codice)
     {
+        System.out.println("calcola CIM");
         // sommo i valori a cui corrispondono i valori in posizione pari
         int sommaPari=0;
         for (int i=0;i<=14;i+=2) {
@@ -280,19 +288,20 @@ public class CodiceFiscale
    private String calcolaCognome (String cognome) { // questo metodo lo chiamo sia per nome che per cognome
        char[] carattere = new char[3];
        int conta=0;
+       System.out.println("calcola cognome o nome");
        //il for serve per prelevare le consonanti del cognome e se si trovano 3 consonanti il ciclo si interrompe
        for (int i = 0; i < cognome.length(); i++) {
-           if (!(cognome.charAt(i) == 'A' && cognome.charAt(i) == 'E' && cognome.charAt(i) == 'I' && cognome.charAt(i)== 'O' && cognome.charAt(i) == 'U')){
+           if (cognome.charAt(i) != 'A' && cognome.charAt(i) != 'E' && cognome.charAt(i) != 'I' && cognome.charAt(i)!= 'O' && cognome.charAt(i) != 'U' ){
 
-               carattere[conta] = cognome.charAt(conta);
+               carattere[conta] = cognome.charAt(i);
                conta++;
            }
            //il conta serve per far capire se ci sono abbastanza consonanti nel cognome e per posizionare le lettere
-           if (conta == 2)
+           if (conta == 3)
                break;
        }
        //utilezzerò questo if se le consonanti non sono abbastanza(perchè le vocali vanno dopo le consonati)
-       if (conta != 2) {
+       if (conta != 3) {
            for (int j=conta; j < cognome.length();j++){
                if (cognome.charAt(j) == 'A' || cognome.charAt(j) == 'E' || cognome.charAt(j) == 'I' || cognome.charAt(j) == 'O' || cognome.charAt(j) == 'U'){
                    carattere[conta] = cognome.charAt(conta);
@@ -302,7 +311,7 @@ public class CodiceFiscale
        }
        //questo if serve per mettere le X se il cognome dovesse essere troppo corto
 
-       if (conta == 1) carattere[2]= 'X';
+       if (cognome.length()<3) carattere[2]= 'X';
 
        cognome=String.valueOf(carattere);//trasformo i caratteri salvati in una stringa per comodità
         return cognome;
