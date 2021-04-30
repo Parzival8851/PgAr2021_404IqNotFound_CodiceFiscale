@@ -27,53 +27,50 @@ public class Scrittura {
         try
         {
             outputter = XMLOutputFactory.newInstance();
-            xmlw = outputter.createXMLStreamWriter(new FileOutputStream("codiciPersone"), UTF);
+            xmlw = outputter.createXMLStreamWriter(new FileOutputStream("codiciPersone.xml"), UTF);
 
             xmlw.writeStartDocument(UTF, VERSION);
             xmlw.writeStartElement("output");//scrivo tag radice "output"
-            aCapo();
-            tab();
+
             //xmlw.writeComment("Inizio Lista Codici");//scrivo commento
             xmlw.writeStartElement("persone");//scrittura tag persone
             xmlw.writeAttribute("numero", Integer.toString(pers.size()));
-            aCapo();
-            tab();
+
             for(int i = 0; i< pers.size();i++)
             {
                 xmlw.writeStartElement("persona");//scrittura tag persone
                 xmlw.writeAttribute("id", Integer.toString(i));
-                aCapo();
-                tab();
+
 
                 xmlw.writeStartElement("nome");//scrittura tag nome
                 xmlw.writeCharacters(pers.get(i).getNome());
                 xmlw.writeEndElement();
-                aCapo();
+
 
                 xmlw.writeStartElement("cognome");//scrittura tag cognome
                 xmlw.writeCharacters(pers.get(i).getCognome());
                 xmlw.writeEndElement();
-                aCapo();
+
 
                 xmlw.writeStartElement("sesso");//scrittura tag sesso
                 xmlw.writeCharacters(pers.get(i).getSesso());
                 xmlw.writeEndElement();
-                aCapo();
+
 
                 xmlw.writeStartElement("comune_nascita");//scrittura tag comune nascita
                 xmlw.writeCharacters(pers.get(i).getComuneNascita());
                 xmlw.writeEndElement();
-                aCapo();
+
 
                 xmlw.writeStartElement("data_nascita");//scrittura tag data nascita
                 xmlw.writeCharacters(pers.get(i).getDataNascita());
                 xmlw.writeEndElement();
-                aCapo();
+
 
                 xmlw.writeStartElement("codice_fiscale");//scrittura tag codice fiscale
                 xmlw.writeCharacters(pers.get(i).getCodiceFiscale());
                 xmlw.writeEndElement();
-                aCapo();
+
 
                 xmlw.writeEndElement(); //chiusura persona
             }
@@ -81,13 +78,11 @@ public class Scrittura {
             xmlw.writeEndElement();//chiusura persone
 
             xmlw.writeStartElement("codici"); // apro tag codici
-            aCapo();
-            tab();
+
             scritturaCodice("invalidi", sbagliati, xmlw);
-            aCapo();
-            tab();
+
             scritturaCodice("spaiati", spaiati, xmlw);
-            aCapo();
+
             xmlw.writeEndElement(); // chiudo tag codici
 
             xmlw.writeEndElement();//chiusura output
@@ -116,18 +111,11 @@ public class Scrittura {
         {
             xmlw.writeStartElement("codice"); // apro tag codice
 
+
             xmlw.writeCharacters(temp); // scrivo il CF sbagliato
             xmlw.writeEndElement(); // chiudo tag codice
         }
         xmlw.writeEndElement(); // chiudo tag lista
-    }
-
-    private void tab(){//metodo per fare \t
-        System.out.print("\t");
-    }
-
-    private void aCapo(){//metodo per andare a capo
-        System.out.println();
     }
 }
 

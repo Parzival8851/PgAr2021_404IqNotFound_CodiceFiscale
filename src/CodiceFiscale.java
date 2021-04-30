@@ -4,10 +4,10 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.FileInputStream;
-import java.util.Locale;
 
-/**
- * questa classe contiene i vari metodi per calcolarlo e infine contiene quello per le unire il tutto
+
+/*
+  questa classe contiene i vari metodi per calcolare il codice fiscale
  */
 public class CodiceFiscale
 {
@@ -25,7 +25,7 @@ public class CodiceFiscale
      */
     private String calcolaData (String data, String sesso) {
         String anno, giorno;
-        String mese;
+        String mese = null;
         System.out.println("calcola data");
         anno = String.valueOf(data.charAt(2)) + String.valueOf(data.charAt(3)); //calcolo l'anno che corrisponde alle cifre in posizione 2 e 3
         giorno = String.valueOf(data.charAt(8)) + String.valueOf(data.charAt(9));//calcolo il giorno che corrisponde alle cifre in posizione 8 e 9
@@ -35,9 +35,41 @@ public class CodiceFiscale
             temp+=40;
             giorno=String.valueOf(temp);
         }
+
         mese=String.valueOf(data.charAt(5)) + String.valueOf(data.charAt(6));/*Trasformo il mese in formato stringa
-                                                                            per poi passarlo al metodo successivo*/
+                                                                     per poi passarlo al metodo successivo*/
         mese=calcolaMese(mese);
+
+
+        if (mese.equals("A") || mese.equals("C") || mese.equals("E") || mese.equals("L") || mese.equals("M") || mese.equals("R") || mese.equals("T"))
+        {
+            // controllo mesi di 31 giorni
+            if (Integer.valueOf(giorno) < 1 || Integer.valueOf(giorno)  > 71)
+                giorno="000";
+            else if (Integer.valueOf(giorno)  > 31 && Integer.valueOf(giorno)  < 41)
+                giorno="000";
+
+        }
+        else if (mese.equals("B"))
+        {
+            // controllo febbraio
+            if (Integer.valueOf(giorno)  < 1 || Integer.valueOf(giorno)  > 68)
+                giorno="000";
+            else if (Integer.valueOf(giorno)  > 28 && Integer.valueOf(giorno)  < 41)
+                giorno="000";
+
+        }
+        else if (mese.equals("D") || mese.equals("H") || mese.equals("S") || mese.equals("P"))
+        {
+            // controllo mesi di 30 gg
+            if (Integer.valueOf(giorno)  < 1 || Integer.valueOf(giorno)  > 70)
+                giorno="000";
+            else if (Integer.valueOf(giorno)  > 30 && Integer.valueOf(giorno)  < 41)
+                giorno="000";
+
+        }
+
+
         return anno+mese+giorno;//viene ritornata una stringa che contiene anno, mese e giorno concatenati
     }
 
@@ -54,40 +86,42 @@ public class CodiceFiscale
             if (mese.equals("01"))
                 mese = "A";
 
-            if (mese.equals("02"))
+            else if (mese.equals("02"))
                 mese = "B";
 
-            if (mese.equals("03"))
+            else if (mese.equals("03"))
                 mese = "C";
 
-            if (mese.equals("04"))
+            else if (mese.equals("04"))
                 mese = "D";
 
-            if (mese.equals("05"))
+            else if (mese.equals("05"))
                 mese = "E";
 
-            if (mese.equals("06"))
+            else if (mese.equals("06"))
                 mese = "H";
 
-            if (mese.equals("07"))
+            else if (mese.equals("07"))
                 mese = "L";
 
-            if (mese.equals("08"))
+            else if (mese.equals("08"))
                 mese = "M";
 
-            if (mese.equals("09"))
+            else if (mese.equals("09"))
                 mese = "P";
+            else return "000";
 
         }
         else{
             if (mese.equals("10"))
                 mese = "R";
 
-            if (mese.equals("11"))
+            else if (mese.equals("11"))
                 mese = "S";
 
-            if (mese.equals("12"))
+            else if (mese.equals("12"))
                 mese = "T";
+            else return "000"; // return errore se la data non esiste
         }
         return mese;//viene ritornato il mese nella versione da codice fiscale
     }
@@ -131,7 +165,7 @@ public class CodiceFiscale
         }
 
         // nel caso non trovi il comune ritorna un errore
-        return "-1";
+        return "000";
     }
 
     /**
@@ -275,6 +309,14 @@ public class CodiceFiscale
         String codice=calcolaCognome(pers.getCognome())+calcolaCognome(pers.getNome())+calcolaData(pers.getDataNascita(), pers.getSesso())+calcolaComune(pers.getComuneNascita());
         // aggiungo il codice di controllo;
         this.codice= codice+calcolaCodiceControllo(codice);
+        // se il codice contiene la stringa di errore allora lo elimino
+        if(codice.contains("000")) this.codice="ASSENTE";
+
+    }
+
+    public CodiceFiscale(String code)
+    {
+        this.codice=calcolaCodiceControllo(code);
     }
 
 
@@ -302,7 +344,7 @@ public class CodiceFiscale
        }
        //utilezzerò questo if se le consonanti non sono abbastanza(perchè le vocali vanno dopo le consonati)
        if (conta != 3) {
-           for (int j=conta; j < cognome.length();j++){
+           for (int j=0; j < cognome.length();j++){
                if (cognome.charAt(j) == 'A' || cognome.charAt(j) == 'E' || cognome.charAt(j) == 'I' || cognome.charAt(j) == 'O' || cognome.charAt(j) == 'U'){
                    carattere[conta] = cognome.charAt(j);
                    conta++;

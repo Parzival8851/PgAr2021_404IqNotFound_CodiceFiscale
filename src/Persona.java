@@ -1,5 +1,4 @@
-/**
- * questa classe serve per identificare le variabile di Persona con i loro get e set
+/*questa classe serve per identificare le variabile di Persona con i loro get e set
  */
 public class Persona
 {

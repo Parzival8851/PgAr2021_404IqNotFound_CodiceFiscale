@@ -3,6 +3,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 /**
  *questa classe contiene appunti i vari controlli che permettono di capire se
@@ -10,15 +11,11 @@ import java.util.ArrayList;
  */
 public class Controlli {
 
-    /**
-     * è un array che contiene i vari codici fiscali che sono spaiati quindi non appartengono
-     *  a nessuna persona inserita
-     *
+    /* è un array che contiene i vari codici fiscali che sono spaiati quindi non appartengono  a nessuna persona inserita
      */
     private ArrayList<String> CF_Spaiati = new ArrayList<String>();
-    /**
-     *è un array che contiene i vari codici fiscali che sono sbagla quindi non idonei ai valori del codice
-     * fiscale, per esempio ha dei numeri dove ci dovrebbero essere lettere o viceversa,...
+    /*è un array che contiene i vari codici fiscali che sono sbagla quindi non idonei ai valori del codice
+      fiscale, per esempio ha dei numeri dove ci dovrebbero essere lettere o viceversa,...
      */
     private ArrayList<String> CF_Sbagliati = new ArrayList<String>();
 
@@ -65,22 +62,35 @@ public class Controlli {
             {
                 // salvo la stringa che contiene il codice da controllare
                 String temp = xmlr.getText();
-                if(!codiceCorretto(temp))
+                if(temp.length()>5)
                 {
-                    // controllo se è corretto, altrimenti lo inserisco tra gli sbagliati
-                    CF_Sbagliati.add(temp);
-                    System.out.println("CF sbagliato");
+                    if(codiceSpaiato(list, temp))
+                    {
+                        // controllo se è già di una persona altrimenti lo inserisco tra gli spaiati
+                        CF_Spaiati.add(temp);
+                        System.out.println("CF spaiato");
+                    }
                 }
-                else if(codiceSpaiato(list, temp))
-                {
-                    // controllo se è già di una persona altrimenti lo inserisco tra gli spaiati
-                    CF_Spaiati.add(temp);
-                    System.out.println("CF spaiato");
-                }
-                else System.out.println("CF corretto");
+
+
 
             }
             xmlr.next();
+        }
+
+        // controllo quali CF negli spaiati sono sbagliati
+        for (int i = 0; i < CF_Spaiati.size(); i++)
+        {
+            // controllo i-esimo codice
+            if(!codiceCorretto(CF_Spaiati.get(i)))
+            {
+                // se il CF è sbagliato lo aggiungo a CF_sbagliati
+                CF_Sbagliati.add(CF_Spaiati.get(i));
+                // e lo rimuovo da spaiati
+                CF_Spaiati.remove(i);
+
+                System.out.println("CF sbagliato");
+            }
         }
     }
 
@@ -108,7 +118,7 @@ private boolean controlloPosizioni(String codice){
         if(codice.length()!=16)//controllo che il codice abbia il giusto numero di caratteri (magari è superfluo ops)
             return false;
         for(i=0;i<6;i++){//controllo che nome e cognome siano lettere
-            if(codice.charAt(i)<'a'||codice.charAt(i)>'Z')
+            if(Pattern.matches("[a-zA-Z]+", String.valueOf(codice.charAt(i))) == false )
                 return false;
         }
         //creo una stringa formata da tutti i caratteri del codice che dovrebbero essere stringhe
@@ -118,11 +128,11 @@ private boolean controlloPosizioni(String codice){
         if(!isIntero(temp))//controllo che la stringa creata sopra sia di soli interi
             return false;
         //controllo che nelle posizioni restanti ci siano solo lettere
-        if(codice.charAt(8)<'a'||codice.charAt(8)>'Z')
+        if(Pattern.matches("[a-zA-Z]+", String.valueOf(codice.charAt(8))) == false )
             return false;
-        if(codice.charAt(11)<'a'||codice.charAt(11)>'Z')
+        if(Pattern.matches("[a-zA-Z]+", String.valueOf(codice.charAt(11))) == false)
         return false;
-        if(codice.charAt(15)<'a'||codice.charAt(15)>'Z')
+        if(Pattern.matches("[a-zA-Z]+", String.valueOf(codice.charAt(15))) == false)
         return false;
 
         return true;//ritorno true solo se arrivo in fondo al metodo, cioè se il codice è corretto
@@ -137,12 +147,17 @@ private boolean controlloPosizioni(String codice){
      private boolean charControlloCorretto(String codice)
      {
          // oggetto di appoggio CF
-         CodiceFiscale temp = null;
+
          // leggo l'ultimo carattere della stringa da controllare
          char ultimo=codice.charAt(15);
+         CodiceFiscale temp = new CodiceFiscale(codice);
          // calcolo il carattere corretto e comparo
-         assert false;
-         return Character.toString(ultimo).equalsIgnoreCase(temp.calcolaCodiceControllo(codice));
+
+         String last = temp.getCodice();
+         //String calc = temp.calcolaCodiceControllo(codice);
+         if (String.valueOf(ultimo).equalsIgnoreCase(last))
+             return true;
+         return false;
      }
 
 
@@ -167,13 +182,14 @@ private boolean controlloPosizioni(String codice){
      * @return
      */
     private boolean giornoValido(String codice){
-        int temp;
+        String temp;
 
-        temp= (int) codice.charAt(9) + (int) codice.charAt(10);//creo un intero con all'interno le cifre che corrispondono al giorno
+        temp= String.valueOf(codice.charAt(9)) + String.valueOf(codice.charAt(10));//creo un intero con all'interno le cifre che corrispondono al giorno
 
-        if((temp<1||temp>71))//faccio i controlli e viene ritornato true solo se corretto
+        int calc = Integer.valueOf(temp);
+        if((calc<1||calc>71))//faccio i controlli e viene ritornato true solo se corretto
             return false;
-        return temp <= 31 || temp >= 41;
+        return calc <= 31 || calc >= 41;
     }
 
     /**
@@ -182,9 +198,9 @@ private boolean controlloPosizioni(String codice){
      * @return
      */
     private boolean meseValido(String codice){
-         if(codice.charAt(8)!='A' || codice.charAt(8)!='B' || codice.charAt(8)!='C' || codice.charAt(8)!='D' ||
-                 codice.charAt(8)!='E' || codice.charAt(8)!='H' || codice.charAt(8)!='L' || codice.charAt(8)!='M' ||
-                 codice.charAt(8)!='P' || codice.charAt(8)!='R' || codice.charAt(8)!='S' || codice.charAt(8)!='T' )
+         if(codice.charAt(8)!='A' && codice.charAt(8)!='B' && codice.charAt(8)!='C' && codice.charAt(8)!='D' &&
+                 codice.charAt(8)!='E' && codice.charAt(8)!='H' && codice.charAt(8)!='L' && codice.charAt(8)!='M' &&
+                 codice.charAt(8)!='P' && codice.charAt(8)!='R' && codice.charAt(8)!='S' && codice.charAt(8)!='T' )
              return false;
          return true;
 
@@ -197,7 +213,9 @@ private boolean controlloPosizioni(String codice){
      */
     private boolean controlloNumGiorni(String codice) {
         int temp;
-        temp = (int) codice.charAt(9) + (int) codice.charAt(10);//creo un intero che corrisponde al giorno di nascita
+        String calc = String.valueOf(codice.charAt(9)) + String.valueOf(codice.charAt(10));
+
+        temp = Integer.valueOf(calc); //creo un intero che corrisponde al giorno di nascita
         //gender free
         char mese = codice.charAt(8);//per comodità mi salvo il mese in un carattere
         if (mese == 'A' || mese == 'C' || mese == 'E' || mese == 'L' || mese == 'M' || mese == 'R' || mese == 'T') {
@@ -237,6 +255,7 @@ private boolean controlloPosizioni(String codice){
             // se il CF esiste tra le persone esco, altrimenti è spaiato
             if (temp.getCodiceFiscale().equalsIgnoreCase(codice)) return false;
         }
+        // nessun persona ha il CF che sto controllando, NON è sbagliato -> è spaiato
         return true;
     }
 }
